@@ -16,7 +16,48 @@ const productos = [
 
 console.log(productos);
 
-const carrito = []; //Declaro mi array de carrito de compras
+//Clase Carrito
+class Carrito {
+    constructor() {
+        this.productos = [];
+        this.cantidadMaximaProductos = 5;
+        this.totalAPagarMaxima = 10000;
+    }
+
+    agregarProducto(producto, cantidad) {
+        
+        for (let i=0; i < cantidad; ++i) {
+            this.productos.push(producto);
+        }
+    }
+
+    cantidadProductos() {
+        return(this.productos.length);
+    }
+
+    totalAPagar() {
+        let total = 0;
+
+        for (const producto of this.productos) { 
+            total += producto.precio;
+        }
+
+        return total;
+    }
+
+    aplicarDescuento() {
+        let descuento = this.totalAPagar();
+
+        if ((this.cantidadProductos() > this.cantidadMaximaProductos) || (this.totalAPagar() > this.totalAPagarMaxima)) {
+            //Se aplica el descuento
+            descuento = descuento * 0.9;        
+        }
+
+        return descuento;
+    }
+}
+
+const carrito = new Carrito();
 
 let salida = "";
 for (const producto of productos) {
@@ -28,20 +69,26 @@ let productoSeleccionado = 100;
 
 while (productoSeleccionado != 0) {
     let producto;
-    productoSeleccionado = parseInt(prompt("Selecciones le producto para agregar al carrito\n\n" + salida));
+    let cantidad;
+
+    productoSeleccionado = parseInt(prompt("Selecciones el producto para agregar al carrito\n\n" + salida));
     
-    if ((productoSeleccionado < productos.length) && (productoSeleccionado > 0)) {
+    if ((productoSeleccionado <= productos.length) && (productoSeleccionado > 0)) {
         //Encontrar el producto que tiene el id ingresado
         producto = productos.find((pr) => pr.id == productoSeleccionado);
         console.log("Producto seleccionado: " + producto.id + " - " + producto.nombre + "\n");
-        carrito.push(producto)
+
+        //Cantidad
+        cantidad = parseInt(prompt("¿Qué cantidad de " + producto.nombre + " va a llevar?"));
+
+        carrito.agregarProducto(producto, cantidad);
     }    
 
 }
 
 salida = "Carrito: \n";
 
-for (const producto of carrito) {
+for (const producto of carrito.productos) {
     for (const key in producto) {
        salida += producto[key];
        salida += " - ";
@@ -50,3 +97,13 @@ for (const producto of carrito) {
 }
 
 console.log(salida);
+
+salida = "";
+
+salida += "Cantidad de Productos en el carrito: " + carrito.cantidadProductos() + "\n";
+salida += "Total a Pagar: $" + carrito.totalAPagar().toFixed(2) + "\n";
+salida += "Con Descuento: $" + carrito.aplicarDescuento().toFixed(2) + "\n";
+
+console.log(salida);
+alert(salida);
+
